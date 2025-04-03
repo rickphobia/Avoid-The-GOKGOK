@@ -1,0 +1,11 @@
+powers up (random on map then give you bigger bullet or smth), replenish health, redo wave speed 
+
+random initial speed and dir for gokgok 
+
+360 dir for the bullet and ships, ship move dir according to mouse 
+
+better ui for waves settings and adjustable skin for the ship 
+
+diff background and diff gogkok patterns for each 5 phases 
+
+better ui for game ending 
