@@ -25,8 +25,7 @@ class EventHandler:
     def check_event(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.game_running = False 
-                pygame.quit()
+                print("Quit event received - Ignoring for Web compatibility")
                 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -37,9 +36,8 @@ class EventHandler:
                 if event.key == pygame.K_e:    
                     self._fire_bullet()
 
-                if event.key == pygame.K_ESCAPE:
+                elif event.key == pygame.K_ESCAPE:
                     self.game_running = False 
-                    pygame.quit()
         
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:

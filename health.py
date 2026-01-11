@@ -1,12 +1,14 @@
 import pygame 
+import os 
 from pygame.math import Vector2
 class Health:
     def __init__(self,ai,ship_left):
         pygame.init()
         self.screen = ai.screen
         self.screen_rect = ai.screen.get_rect()
-        filepath01 = 'images/empty_health.bmp'
-        filepath02 = 'images/health.bmp'
+        base_path = os.path.dirname(__file__)
+        filepath01 = os.path.join(base_path,'images','empty_health.bmp')
+        filepath02 = os.path.join(base_path,'images','health.bmp')
         
         self.image_empty = pygame.image.load(filepath01)
         self.image_empty = pygame.transform.scale(self.image_empty,(70,70))

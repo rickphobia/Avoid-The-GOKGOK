@@ -1,9 +1,11 @@
 import pygame
+import os 
 from settings import Setting
 from pygame.math import Vector2
 
-filepath = 'images/kx_ship.bmp'
 
+base_path = os.path.dirname(__file__)
+image_path = os.path.join(base_path,'images','kx_ship.bmp')
 class Ship:
     def __init__(self, ai_game):
         """create ship and set position"""
@@ -16,7 +18,7 @@ class Ship:
         #letting the screen to be a rectangle
 
         #assign ship image
-        self.image = pygame.image.load(filepath)
+        self.image = pygame.image.load(image_path)
         self.image = pygame.transform.scale(self.image, (100,134))
         #assign ship as a rectangle 
         self.rect = self.image.get_rect()

@@ -1,15 +1,14 @@
 import pygame
+import os 
 from pygame.sprite import Sprite
-from random import randint 
-from settings import Setting
 class Alien(Sprite):
     def __init__(self, ai_game):
         super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
-        self.setting = Setting()
 
-        filepath = 'images/gokgok.bmp'
+        base_path = os.path.dirname(__file__)
+        filepath = os.path.join(base_path,'images','gokgok.bmp')
         self.image = pygame.image.load(filepath)
         self.image = pygame.transform.scale(self.image,(50,70))
         self.rect = self.image.get_rect()
