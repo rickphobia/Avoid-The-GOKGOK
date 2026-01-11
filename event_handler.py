@@ -17,7 +17,7 @@ class EventHandler:
 
 
     def _fire_bullet(self):
-        if len(self.bullets) <= self.settings.bullet_ammount:
+        if len(self.bullets) <= self.settings.bullet_amount:
             new_bullet  = Bullet(self.ai_game)
             self.bullets.add(new_bullet)
 
@@ -25,8 +25,7 @@ class EventHandler:
     def check_event(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                print("Quit event received - Ignoring for Web compatibility")
-                
+                self.ai_game.game_running = False                 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
@@ -37,7 +36,7 @@ class EventHandler:
                     self._fire_bullet()
 
                 elif event.key == pygame.K_ESCAPE:
-                    self.game_running = False 
+                    self.ai_game.game_running = False 
         
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
@@ -67,8 +66,9 @@ class EventHandler:
             self.stats.reset_stats()
             self.bullets.empty()
             self.aliens.empty()
-            self.settings._initialize_dynamic_settings()
+
             self.stats.game_active = True
+            self.ai_game._create_fleet()
 
 
 

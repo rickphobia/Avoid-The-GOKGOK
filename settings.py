@@ -13,7 +13,7 @@ class Setting:
         self.bullet_width = 3
         self.bullet_height = 15
         self.bullet_color = (0,0,0)
-        self.bullet_ammount = 10
+        self.bullet_amount = 10
         self.game_level = 1
 
         self.speedup_scale = 1.01

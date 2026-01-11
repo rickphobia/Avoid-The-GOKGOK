@@ -24,13 +24,19 @@ class AlienInvasion():
         basepath = os.path.dirname(__file__)
 
         self.gokgok = os.path.join(basepath,'images','gokgok.mp3')
+        
+        try:
+            self.hit_sound = pygame.mixer.Sound(self.gokgok)
+        except: 
+            self.hit_sound = None 
+
         self.ship = Ship(self)
         self.play_button = Button(self,'Play')
         self.stats = Gamestats(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.event = EventHandler(self,self.ship,self.bullets)
-        self.health = Health(self,self.stats.ship_left)
+        self.health = Health(self, self.stats.ship_left)
         self.game_running = True 
 
         self.prep_msg= PrepMsg(self)
@@ -51,30 +57,42 @@ class AlienInvasion():
                 self._update_screen() 
 
             if self.stats.game_active:
-                self._update_alien()
+                await self._update_alien()
                 self._update_bullets()
 
             await asyncio.sleep(0)
 
-    def _update_alien(self):
+    async def _update_alien(self):
         self._check_fleet_edges()
         self.aliens.update()
+
+
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
             self._play_gokgok_sound()
-            self._ship_hit()
+            await self._ship_hit()
 
 
     def _play_gokgok_sound (self):
-        pygame.mixer.music.load(self.gokgok)
-        pygame.mixer.music.play()
+        if self.hit_sound:
+            self.hit_sound.play()
+
+
     def _create_fleet(self):
         alien = Alien(self)
         alien_width = alien.rect.width
         alien_height = alien.rect.height
-        available_space_x = 1920- (1*alien_width)
-        available_space_y = 1080 - (5*self.ship.rect.height) 
-        number_rows = int(available_space_y / alien_height) -4
-        numbers_aliens = int(available_space_x / alien_width) -4    
+
+        available_space_x = self.settings.width- (1*alien_width)
+        available_space_y = self.settings.height - (5*self.ship.rect.height) 
+
+        number_rows = int(available_space_y / alien_height) - 4
+        numbers_aliens = int(available_space_x / alien_width) -4
+
+        if number_rows <1:
+            number_rows = 1
+
+        if numbers_aliens <1:
+            numbers_aliens =1    
 
         for row_number in range(number_rows):
             for alien_number in range(numbers_aliens):
@@ -94,6 +112,7 @@ class AlienInvasion():
         for alien in self.aliens.sprites():
             if alien.check_edges_hori():
                 self._change_direction_aliens_hori()
+                break
 
 
 
@@ -101,8 +120,9 @@ class AlienInvasion():
             #     self._change_direction_aliens_ver()
 
     def _change_direction_aliens_hori(self):
-        for alien in self.aliens.sprites(): 
-            self.settings.alien_dir_x*=-1
+        self.settings.alien_dir_x*=-1
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed 
 
 
     # def _change_direction_aliens_ver(self):
@@ -121,6 +141,8 @@ class AlienInvasion():
         if not self.aliens: 
             self.bullets.empty() 
             self._create_fleet()
+            self.settings.increase_speed()
+
         self._check_collisions_aliens()
 
         self._alien_collide_with_ship()
@@ -139,23 +161,29 @@ class AlienInvasion():
                 self.aliens.remove(alien) 
                 alien_collide = True 
 
-        if alien_collide == True:
-            self.settings.increase_speed()
-    
+            
     def _alien_collide_with_ship(self):
-        if pygame.sprite.spritecollideany (self.ship,self.aliens):
+        if pygame.sprite.spritecollideany (
+            self.ship,
+            self.aliens,
+            False,
+            pygame.sprite.collide_rect_ratio(0.8)
+            ):
             print('Ship Hit!!!')
+            asyncio.create_task(self._ship_hit())
     
 
     async def _ship_hit(self):
         if self.stats.ship_left >1: 
+            self.stats.ship_left -= 1 
+            await asyncio.sleep(1)
+
+
             self.aliens.empty()
             self.bullets.empty()
-            self.stats.ship_left -= 1 
             self.ship._ship_center()
             self._create_fleet()
             
-            await asyncio.sleep(1)
         else:
             self.stats.game_active = False
             pygame.mouse.set_visible(True)

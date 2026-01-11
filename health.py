@@ -16,7 +16,7 @@ class Health:
         self.image_full = pygame.transform.scale(self.image_full,(70,70))
     
 
-        self.pos = Vector2(0,1000)
+        self.pos = Vector2(10, self.screen_rect.bottom - 100)
         self.spacing = 10 
 
     def blitme(self,ship_left):
