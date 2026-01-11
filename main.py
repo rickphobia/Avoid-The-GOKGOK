@@ -1,5 +1,6 @@
 import pygame
 import os 
+import random
 import asyncio
 from settings import Setting
 from ship import Ship
@@ -41,9 +42,12 @@ class AlienInvasion():
 
         self.prep_msg= PrepMsg(self)
 
+        self.spawn_timer = 0.0
+        self.level_timer = 0.0
+        self.spawn_interval = 0.2
+
         
 
-        self._create_fleet()
         pygame.display.set_caption("Avoid the GOKGOK")
 
     async def run_game(self):
@@ -63,61 +67,53 @@ class AlienInvasion():
             await asyncio.sleep(0)
 
     async def _update_alien(self):
-        self._check_fleet_edges()
         self.aliens.update()
+        self.spawn_timer += self.dt 
+        if self.spawn_timer >= self.spawn_interval:
+            self._create_alien_drop() 
+            self.spawn_timer = 0 
 
+        self.level_timer += self.dt
+        if self.level_timer >= 3.0: 
+            self._level_up() 
 
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
             self._play_gokgok_sound()
             await self._ship_hit()
 
 
+
+
+    def _level_up(self):
+        """Advance the level, speed up, and rain harder."""
+        self.settings.increase_speed()
+        self.level_timer = 0  # Reset the 3s timer
+        
+        # Make it rain harder! Decrease the spawn interval.
+        # Limit it so it doesn't become instant (minimum 0.2s)
+        if self.spawn_interval > 0.2:
+            self.spawn_interval -= 0.1
+            
+        print(f"LEVEL UP! Wave {self.settings.game_level}")
     def _play_gokgok_sound (self):
         if self.hit_sound:
             self.hit_sound.play()
 
 
-    def _create_fleet(self):
+    def _create_alien_drop(self):
         alien = Alien(self)
         alien_width = alien.rect.width
-        alien_height = alien.rect.height
+        random_x = random.randint(0,self.settings.width - alien_width)
 
-        available_space_x = self.settings.width- (1*alien_width)
-        available_space_y = self.settings.height - (5*self.ship.rect.height) 
+        alien.rect.x = random_x
+        alien.x = float(alien.rect.x)
 
-        number_rows = int(available_space_y / alien_height) - 4
-        numbers_aliens = int(available_space_x / alien_width) -4
-
-        if number_rows <1:
-            number_rows = 1
-
-        if numbers_aliens <1:
-            numbers_aliens =1    
-
-        for row_number in range(number_rows):
-            for alien_number in range(numbers_aliens):
-                self._create_multiple_aliens(alien_number,row_number)
-            
-    def _create_multiple_aliens(self, alien_number,row_number):
-        alien = Alien(self)
-        alien_width, alien_height = alien.rect.size
-        ###idk what does this even mean i only know its for the x position  
-        alien.x = alien_width + 2*alien_width*alien_number-5
-        alien.y = alien_height + 2*alien_height*row_number-2
-        alien.rect.x = alien.x 
-        alien.rect.y = alien.y
+        alien.rect.y = -alien.rect.height 
+        alien.y = float(alien.rect.y)
         self.aliens.add(alien)
+            
+    
 
-    def _check_fleet_edges(self):
-        for alien in self.aliens.sprites():
-            if alien.check_edges_hori():
-                self._change_direction_aliens_hori()
-                break
-
-
-
-            # if alien.check_edges_ver():
-            #     self._change_direction_aliens_ver()
 
     def _change_direction_aliens_hori(self):
         self.settings.alien_dir_x*=-1
@@ -138,14 +134,10 @@ class AlienInvasion():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
         self._collide_with_bottom()
-        if not self.aliens: 
-            self.bullets.empty() 
-            self._create_fleet()
-            self.settings.increase_speed()
+      
 
         self._check_collisions_aliens()
 
-        self._alien_collide_with_ship()
 
     def _check_collisions_aliens(self):
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
@@ -163,7 +155,7 @@ class AlienInvasion():
 
             
     def _alien_collide_with_ship(self):
-        if pygame.sprite.spritecollideany (
+        if pygame.sprite.spritecollide(
             self.ship,
             self.aliens,
             False,
@@ -182,7 +174,7 @@ class AlienInvasion():
             self.aliens.empty()
             self.bullets.empty()
             self.ship._ship_center()
-            self._create_fleet()
+            self._create_alien_drop()
             
         else:
             self.stats.game_active = False

@@ -5,7 +5,7 @@ class Setting:
         self.width = 0
         self.length = 0
         self.bg_color = (250,250,250)
-
+        self.fleet_drop_speed = 10 
 
         self.ship_limit = 3
         
@@ -39,7 +39,7 @@ class Setting:
 
     def increase_speed(self):
         self.alien_speed_x *= self.speedup_scale
-        self.alien_speed_y *= (self.speedup_scale+1)
+        self.alien_speed_y *= self.speedup_scale
         self.game_level += 1 
         self.alien_points += 20
 

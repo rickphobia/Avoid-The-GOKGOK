@@ -68,7 +68,7 @@ class EventHandler:
             self.aliens.empty()
 
             self.stats.game_active = True
-            self.ai_game._create_fleet()
+            self.ai_game.spawn_timer = self.ai_game.spawn_interval
 
 
 

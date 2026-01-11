@@ -1,4 +1,5 @@
 import pygame
+import random
 import os 
 from pygame.sprite import Sprite
 class Alien(Sprite):
@@ -16,16 +17,21 @@ class Alien(Sprite):
         self.rect.x = self.rect.width
         self.rect.y = self.rect.height 
         self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
+        self.x_direction = random.choice([-1,1])
         
 
     def update(self):
-        self.rect.x += int(self.settings.alien_speed_x* self.settings.alien_dir_x)
-        self.rect.y += int(self.settings.alien_speed_y*self.settings.alien_dir_y)
+        self.x += (self.settings.alien_speed_x * self.x_direction)
+        self.rect.x = self.x 
 
-
-    def check_edges_hori(self):
         if self.rect.right >= self.screen_rect.right or self.rect.left <= 0:
-            return True
+            self.x_direction *= -1 
+
+
+
+        self.y += self.settings.alien_speed_y
+        self.rect.y = self.y 
     # def check_edges_ver(self):
     #     if self.rect.bottom >= self.screen_rect.bottom or self.rect.top <=0:
     #         return True 
