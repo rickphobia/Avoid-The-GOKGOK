@@ -1,4 +1,5 @@
 import pygame
+import os 
 import asyncio
 from settings import Setting
 from ship import Ship
@@ -20,7 +21,9 @@ class AlienInvasion():
         self.settings.width = self.screen.get_width()
         self.settings.height = self.screen.get_height()
         self.clock = pygame.time.Clock()
-        self.gokgok = 'images/gokgok.mp3'
+        basepath = os.path.dirname(__file__)
+
+        self.gokgok = os.path.join(basepath,'images','gokgok.mp3')
         self.ship = Ship(self)
         self.play_button = Button(self,'Play')
         self.stats = Gamestats(self)
@@ -152,7 +155,7 @@ class AlienInvasion():
             self.ship._ship_center()
             self._create_fleet()
             
-            await asyncio.wait(1)
+            await asyncio.sleep(1)
         else:
             self.stats.game_active = False
             pygame.mouse.set_visible(True)

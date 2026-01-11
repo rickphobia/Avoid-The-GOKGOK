@@ -38,8 +38,8 @@ class Setting:
 
 
     def increase_speed(self):
-        self.alien_speed_x * self.speedup_scale
-        self.alien_speed_y * (self.speedup_scale+1)
+        self.alien_speed_x *= self.speedup_scale
+        self.alien_speed_y *= (self.speedup_scale+1)
         self.game_level += 1 
         self.alien_points += 20
 

@@ -1,13 +1,12 @@
 import pygame
 from pygame.sprite import Sprite
-from settings import Setting
 
 class Bullet(Sprite):
 
     def __init__(self,ai_game):
         super().__init__()
         self.screen = ai_game.screen                                            
-        self.setting = Setting()
+        self.setting = ai_game.settings
         self.color = self.setting.bullet_color
 
         self.rect = pygame.Rect(0,0, self.setting.bullet_width, self.setting.bullet_height)
