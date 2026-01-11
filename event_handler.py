@@ -1,5 +1,5 @@
-import sys
 import pygame
+import sys 
 from pygame.math import Vector2
 from bullet import Bullet
 class EventHandler:
@@ -23,20 +23,25 @@ class EventHandler:
 
 
     def check_event(self):
-        keys = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                sys.exit()
+                self.game_running = False 
+                pygame.quit()
+                
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
 
-        if keys[pygame.K_e]:
-            self._fire_bullet()
 
-        if keys[pygame.K_ESCAPE]:
-            sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_e:    
+                    self._fire_bullet()
+
+                if event.key == pygame.K_ESCAPE:
+                    self.game_running = False 
+                    pygame.quit()
         
+        keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
             self.ship.rect_pos.y -= self.settings.ship_speed*self.dt
 
